@@ -100,7 +100,7 @@ def test_funcs():
 	assert not is_probably_prime(121)
 	assert is_probably_prime(191)
 	pk, sk = create_key_pair()
-	assert decrypt_message(encrypt_message('hello world', pk), sk) == 'hello world'
+	assert decrypt_message(encrypt_message('hello world', pk), sx`k) == 'hello world'
 	assert decrypt_message(encrypt_message('hello world', sk), pk) == 'hello world'
 
 # returns (public_key, private_key)

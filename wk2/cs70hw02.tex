@@ -1,0 +1,172 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\title{CS 70 HW 02}
+\author{Avik Jain}
+\date{29 June 2018}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsfonts}
+\setlength\parindent{0pt}
+\begin{document}
+\maketitle
+
+\section{Hit or Miss?}
+\begin{enumerate}[label=(\alph*)]
+    \item Incorrect. This proves it for natural numbers, not reals. It misses the interval $0 < n < 1$.
+    \item Correct
+    \item Incorrect. The inductive step fails for $n=1$, as $1$ cannot be rewritten as the sum of two smaller natural numbers.
+\end{enumerate}
+
+\section{A Coin Game}
+
+\textbf{Claim:} A player beginning with a stack of size $n$ will get $\frac{n(n-1)}{2}$ points by the end of the game, regardless of the chosen moves. \\
+
+
+\textit{Proof.}We use strong induction on $n$, the number of coins in the stack. \\
+
+\textit{Inductive hypothesis:} If the player plays beginning with a stack of size $k$ such that $0\leq k \le n$, once all the coins from that stack are in separate piles (i.e. no more turns can be made on coins which began in that stack), the player will have won $\frac{k(k-1)}{2}$ points by splitting stacks of coins originating in that stack. \\
+
+\textit{Base case:} Trivially, if $n=1$, the game ends before the player makes any moves, so the score is $0=\frac{n(n-1)}{2}$. \\
+
+\textit{Inductive step:} Suppose the player splits a stack of size $n$ into stacks $X$ and $Y$ of size $a$ and $n-a$ respectively. Then, from this move, the player would have won $a(n-a)$ points. For all $n$ coins from the original stack to have been placed in separate piles, the player would have to play enough moves for the coins in each of $X$ and $Y$ to be separated. By the inductive hypothesis, the player would win $\frac{a(a-1)}{2}$ and $\frac{(n-a)((n-a)-1)}{2}$ from moves to coins from $X$ and $Y$.
+
+The total points from the current move and subsequent moves is therefore
+\begin{align}
+    a(n-a)+\frac{a(a-1)}{2}+\frac{(n-a)((n-a)-1)}{2} &= a(n-a)+\frac{a(a-1)+(n-a)((n-a)-1)}{2} \\
+    &= a(n-a)+\frac{(a^2-a)+(n^2-2an+a^2) - (n-a)}{2} \\
+    &= a(n-a)+\frac{2a^2+n^2-2an -n}{2} \\
+    &= (an-a^2) + (a^2-an) + \frac{n^2-n}{2} \\
+    &= \frac{n(n-1)}{2}
+\end{align}
+
+\section{Calculator Enigma}
+    \textbf{Claim:} All values that we can display on the calculator can be written in the form $\frac{3k}{10^l}$, for $k \in \mathbb{Z}, l \in \mathbb{N}$. \\
+    
+    \textit{Proof.} The result of a calculation is computed recursively, looking at the last operation to be evaluated (according to order of operations), and then evaluating its two arguments and applying the operator to the results. We proceed by strong induction on the depth of this recursion tree. \\
+    
+    \textit{Inductive hypothesis:} If the recursion tree of a computation has depth $k$ such that $1 \leq k \le n$, then the result of the computation can be written in the form $\frac{3k}{10^l}$, for $k \in \mathbb{Z}, l \in \mathbb{N}$. \\
+    
+    \textit{Base case:} If the recursion tree has depth $1$, then the user has only entered a single number into the calculator, with no operations. The user can use the digits $3, 6, 9$ a decimal point, and a minus sign. Ignoring the decimal point, the entered integer is clearly a multiple of $3$, as each digit is a multiple of $3$, so it can be written as $3k$ for an integer $k$. The placement of the decimal point $s$ digits from the right represents a multiplication by $10^{-s}$. Therefore, using only these keys on the calculator, the user can only directly enter a number that can be represented in the said form. \\
+    
+    \textit{Inductive step:} We now consider a computation represented by a recursion tree of depth $n$. The operations $+$, $-$, and $\times$ each take two arguments. These arguments represent sub-trees rooted at the children of the current recursive call. These sub-trees therefore have depth less than $n$, so the results of their computations can be written as $\frac{3k}{10^l}$, for $k \in \mathbb{Z}, l \in \mathbb{N}$, by the inductive hypothesis. We now simply show that the operations $+$, $-$, and $\times$ are closed under the set of numbers that can be written in this form, to show that the result of the root operation can also be written in this form. We will refer to the first argument of the root operation as $a_1=\frac{3k_1}{10^{s_1}}$, and the second as $a_2=\frac{3k_2}{10^{s_2}}$ \\
+    
+    \textbf{Case 1.} The root operation is addition. Since addition is commutative, we can assume without loss of generality that $s_1 \leq s_2$.
+    \begin{align}
+        a_1 + a_2 &= \frac{3k_1}{10^{s_1}} + \frac{3k_2}{10^{s_2}} \\
+        &= \frac{3k_1\cdot 10^{s_2-s_1}}{10^{s_1}\cdot 10^{s_2-s_1}} + \frac{3k_2}{10^{s_2}} \\
+        &= \frac{3k_1\cdot 10^{s_2-s_1}}{10^{s_2}} + \frac{3k_2}{10^{s_2}} \\
+        &= \frac{3(10^{s_2-s_1}k_1+k_2)}{10^{s_2}} \\
+    \end{align} \\
+    
+    \textbf{Case 2.} The root operation is subtraction. Since subtraction is addition with one of the arguments negated, and the set of numbers that can be written as $\frac{3k}{10^l}$, for $k \in \mathbb{Z}, l \in \mathbb{N}$ is closed under negation ($-n = \frac{3(-k)}{10^l}$), the proof is identical to the one for addition. \\
+    
+    \textbf{Case 3.} The root operation is multiplication. 
+    \begin{align}
+        a_1 a_2 &= \frac{3k_1}{10^{s_1}}\frac{3k_2}{10^{s_2}} \\
+        &= \frac{3(3k_1k_2)}{10^{s_1 s_2}}
+    \end{align}
+\section{Build-up Error?}
+
+The inductive step shows how to obtain a connected graph with $n+1$ nodes by building-up from an arbitrary graph of $n$ nodes. This fails to prove that any graph of $n+1$ nodes is connected, because it falsely assumes that every graph of $n+1$ nodes can be constructed in this way. The proof therefore shows that for every $n$, there exists a connected graph of $n$ nodes, each with a degree of at least $1$. However, it does not show that all graphs of $n$ vertices,with minimum degree 1 are connected.
+
+\section{Proofs on Graphs}
+\begin{enumerate}[label=(\alph*)]
+    \item \textit{Proof.} We represent this problem as a directed graph, where cities are nodes and a road from $X$ to $Y$ is represented by a directed edge from $X$ to $Y$. We proceed by weak induction on the number of nodes in the graph. We use $P(G, N, k)$ to denote the proposition that in graph $G$, node $N$ can be reached from any other node by a path of length at most $k$.\\
+    
+    \textit{Inductive hypothesis:} In a graph $G$ of size $n$ where each pair of nodes has at least one directed edge between them, there exists a node $N$ such that $P(G, N, 2)$ is true. \\
+    
+    \textit{Base case:} For $n=2$, there are two nodes with an edge pointing from one to the other. The node which the edge points to can be reached by a path of length $1$ from the other node. \\
+    
+    \textit{Inductive step:}
+    We pick an arbitrary node $R$ from the graph $G$ of size $n+1$ and remove it and all edges to which it is incident, to obtain a graph of $n$ nodes, $F$. By the inductive hypothesis, there exists a node in $F$ , which we will call $A$, such that $P(F, A, 2)$ is true. We will refer to the set of nodes which have a path of length $1$ to $A$ as $S_1$. We will refer to the nodes which have a path of length $2$ and no path of length $1$ to $A$ as $S_2$. Each node in $S_2$ must have at least one edge to a node in $S_1$. Note that every node in $G_R$ is in $\{A\}\cup S_1 \cup S_2$.\\
+    
+    We add $R$ and the associated edges back to the graph to obtain the original graph. We now consider three exhaustive cases regarding the new edges between $R$ and the other nodes.\\
+    
+    \textbf{Case 1.} There is an edge from $R$ to $A$. Then  $P(G, A, 2)$ is true since $P(F, A, 2)$ was true, and the new added node has a path of length $1$ to $A$.\\
+    
+    \textbf{Case 2.} There is an edge from $R$ to a node $N$ in $S_1$. Then $P(G, A, 2)$ is true, since $P(F, A, 2)$ was true, and there is a two-edge path from $R$ to $A$ through $N$.\\
+    
+    \textbf{Case 3.} If there is no edge from $R$ to $A$ and there is no edge from $R$ to any node $N$ in $S_1$, then there must be edges from $A$ and every node in $S_1$ to $R$. Every node $N$ in $S_2$ has an edge to a node $M$ in $S_1$, so $N$ has a two-edge path to $R$ through $M$. Therefore, $P(G, R, 2)$ is true.\\
+    
+    Therefore, there is a node (either $A$ or $R$) in $G$ such that every other node has a path to it of length at most $2$.
+    
+    \item We provide an algorithm to find up to $m$ walks to completely cover the edges of a graph with at most $2m$ odd-degree nodes, and then prove the correctness of this algorithm. We use the term \textit{edge-cover} to refer to a set of walks which together include every edge in a graph. \\
+    
+    We start with a subroutine, \textproc{FindWalk(G)}, which outputs a walk in $G$ starting and ending on odd-degree nodes. It does so by arbitrarily choosing an odd-degree node to start on, and walking until it gets stuck. \\
+    
+    \textproc{FindWalk} always gets stuck at an odd-degree node different from the one it started at. When it leaves the odd-degree starting node by taking an edge, there are an even number of edges remaining on that node. Every time it enters the starting node using one edge, there must also exist an edge through which it leaves, since the number of edges before it entered was even. Therefore, it cannot get stuck at the starting node. By an identical argument, it cannot get stuck at an even-degree node which it enters after starting. Therefore, \textproc{FindWalk} must end at an odd-degree node different from the one it started at.
+    
+    We now provide an algorithm to find an edge-cover for a graph $G$ consisting of up to $m$ walks, if $G$ has $2m$ odd-degree nodes.
+    
+    \begin{algorithm}
+        \begin{algorithmic}[1]
+        \Function{FindCover(G)}{}
+        \If{G \text{has 2 nodes}} 
+        \State \Return \text{a walk consisting of the graph's only edge}
+        \EndIf
+        \State $W = \Call{FindWalk}{G}$
+        \State $walks = []$
+        \State \text{Let $G_1,...,G_k$ be the connected components when the edges in $W$ are removed from $G$}
+        \For{i \textbf{from} 1 \textbf{to} k}
+            \If{all nodes in $G_i$ have even degree}
+                \State Find an Eulerian tour $T$ in $G_i$
+                \State $W = \textproc{Splice(W, T)}$
+            \Else
+                \State \text{Add all walks from \Call{FindCover}{$G_i$} to}  \textit{walks}
+            \EndIf
+        \EndFor
+        \State \text{Add $W$ to \textit{walks}}
+        \State \Return \textit{walks}
+        \EndFunction
+        \end{algorithmic}
+    \end{algorithm}
+    
+We now prove that this algorithm correctly returns a set of up to $m$ walks which cover every edge in $G$.\\
+
+\textit{Proof.} We proceed by induction on the number of nodes in the graph, $n$. 
+
+\textit{Inductive hypothesis:} If a graph of $k$ nodes, with $2 \leq k \le n$, has $2m$ nodes of odd degree, there is a set of up to $m$ walks that completely covers its edges.
+
+\textit{Base case:} When $n=2$, the only possible connected graph is one with 2 nodes and an edge between them. Since both nodes have exactly 1 incident edge, there are two nodes of odd degree, meaning $m=1$. The algorithm returns a single walk covering the only edge in the graph.
+
+\textit{Inductive step:} We must prove that every edge is included in the walks returned for a graph of size $n$, and that at most $m$ walks are returned. We first prove that every edge is included in one of the returned walks. Every edge is either in $W$ or some $G_i$. The edges originally in $W$ are in the set of returned walks since $W$ (with some additional edges spliced on) is in this set. The edges in one of the $G_i$ with no odd-degree nodes are in the set of returned walks because a Eulerian tour through $G_i$ is spliced onto $W$, which is returned. The edges in a $G_i$ with odd-degree nodes are returned due to the inductive hypothesis, since $G_i$ has less than $n$ nodes and walks covering it are added to the set of walks that are returned. Note that the condition for the inductive hypothesis to apply, that a graph must have $2m$ odd-degree nodes for some integer $m$, is non-restrictive; it is impossible for a graph to have an odd number of odd-degree nodes, since the sum of all node degrees must be even (twice the number of edges). \\
+
+We now prove that at most $m$ walks are returned. The original walk $W$ includes an odd number of edges incident to  its odd-degree start and end nodes, and an even number of edges incident to each of the other intermediate, even-degree nodes. This is true because it must have a corresponding exit edge for every entry edge for intermediate nodes, but no corresponding entry edge for its initial exit from the start node, and vice-versa for the end node. When we remove the edges in $W$ from the graph, the odd-degree nodes at the start and end must then have an odd number of edges removed, causing them to become even-degree, while the even-degree nodes lose an even number of edges, remaining even-degree. Therefore, this edge removal step results in there being $2m-2$ odd-degree edges among all the remaining connected components. \\
+
+The connected components with only even-degree nodes do not affect the total walk count, since they are spliced onto the original walk $W$, since such graphs must have a Eulerian tour. \\
+
+We refer the number of odd-degree nodes in $G_i$ as $2m_i$ (it must be even). Then, by the inductive hypothesis, we can cover the edges in $G_i$ using $m_i$ walks. We showed that $\sum 2m_i = 2m-2$. Therefore, we have  $\sum m_i = m-1$. A total of $m-1$ walks are used to cover the connected components which have odd-degree nodes, in addition to the 1 original walk which had tours of the even-degree components spliced onto it. Therefore, the algorithm returns a total of $m$ walks for a graph with $2m$ odd-degree nodes.
+\end{enumerate}
+\section{Always, Sometimes, or Never}
+\begin{enumerate}[label=(\alph*)]
+	\item $G$ could be planar or non-planar. The non-planar graph $K_{3,3}$ is bipartite, so it can also trivially be colored with 4 colors. Any planar graph can be 4-colored by the Four Color Theorem.
+	\item Any planar graph can be colored using 4 colors. If a graph requires 7 colors to be colored, it must be non-planar.
+	\item $G$ could be planar or non-planar. A graph consisting of three isolated nodes is planar and satisfies $e \leq 3v-6$, since $0 \leq 3\cdot 3-6$. An example of a non-planar graph that satisfies this property is a graph consisting of $K_5$ and 1 isolate node. It has 10 edges and 6 nodes, so $10 \leq 3(6)-6$. 
+	\item A graph of maximum degree 2 is a linked-list, where the tail may be connected to the head (in which case it is circular). A linked-list can be trivially embedded in a Cartesian plane, if we place the $n$th node from the head at the coordinate $(n, 0)$. The edges clearly do not intersect, since they each occupy a disjoint interval along the $x$-axis, so no points on different edges could have the same coordinate. If the graph is circular, we place the head (arbitrarily chosen) at $(0, 1)$, and the rest at $(n, 0)$ and use line segments as edges. The edges, excluding the one from tail to head, don't intersect, by the same reasoning as before. The $y$-coordinate of every point on the edge from tail to head is always greater than 0, so it doesn't intersect these edges either. Therefore, a connected graph with max degree 2 can be embedded in the plane without edge intersections.
+	\item A graph of maximum degree 2 consists of multiple connected components of maximum degree 2. Since each connected component is planar (proved above), the graph is planar.
+\end{enumerate}
+\section{Bipartite Graphs}
+\begin{enumerate}[label=(\alph*)]
+	\item We proceed by induction on the number of edges. \\
+	\textit{Base case:} There are no edges, $e=0$. Then the degree of all vertices is 0, so $\sum_{v\in R} deg(v) = \sum_{v\in L} deg(v) = 0$.\\
+	\textit{Inductive hypothesis} Given a graph with $e$ edges and a bipartite partition of the edges, $L$ and $R$, $\sum_{v\in R} deg(v) = \sum_{v\in L} deg(v)$ is true.\\
+	\textit{Inductive step:} We have a graph of $e+1$ edges. We remove an arbitrary edge $E$, resulting in a graph of $e$ edges. By the inductive hypothesis, $\sum_{v\in R} deg(v) = \sum_{v\in L} deg(v)$ must be true for the new graph. We add back $E$ to obtain the original graph, noting that $E$ must have one endpoint node in $R$ and the other in $L$. Therefore, we add 1 to each set's degree sum we had after removing the edge. It follows from the inductive hypothesis that $1+\sum_{v\in R} deg(v) = 1+\sum_{v\in L} deg(v)$, so the degree sums in the graph with $e+1$ edges remain equal.\\
+	\item We proved in the last part that $L$ and $R$ must have equal degree sums. We call the degree sum for one part $a$. The average degree for the $L$ is $s = \frac{a}{|L|}$, and rhe average degree for the $R$ is $t = \frac{a}{|R|}$. Therefore, $\frac{s}{t} =\frac{a}{|L|} /\frac{a}{|R|}=\frac{|R|}{|L|}$.
+	\item We proceed by induction on $n$. We can refer to the original graph $G$ as $G_0$.\\
+	\textit{Inductive hypothesis:} $G_n$ is bipartite.\\
+	\textit{Base case:} We are given that $G_0$ is bipartite.\\
+	\textit{Inductive step:} Since $G_n$ is bipartite, it can be partitioned into sets of nodes $R$ and $L$ such that each edge connects a node in one to a node in the other. We copy the nodes and edges in $G_n$ to a new graph $G_n '$, and then connect each node in $G_n$ to its corresponding node in $G_n '$. We refer to the partitions in $G_n '$ as $R'$ and $L'$, so that nodes in $R$ correspond to those in $R'$, and nodes in $L$ correspond to those in $L'$. Now we place edges between corresponding nodes in $G_n$ and $G_n'$ to obtain $G_{n+1}$. The edges in $G_{n+1}$ are between nodes from $R$ and $L$, $L'$ and $L$, $R$ and $R'$, and $L'$ and $R'$. We can therefore define a new partition for $G_{n+1}$ as $R_{next} = R\cup L'$ and $L_{next} = R'\cup L$. As described previously, all edges in $G_{n+1}$ must be between $R_{next}$ and $L_{next}$. Therefore, a bipartite partition exists so $G_{n+1}$ is bipartite.
+	
+\end{enumerate}
+\section{Modular Arithmetic Solutions}
+\begin{enumerate}[label=(\alph*)]
+    \item $x = 10$. Suppose another solution $x'$ exists. Then $2(x-x') \equiv 0 (mod 15)$, so $15|(x-x)'$. In a modular setting, this means $x-x'$ is 0, which contradicts the statement that there is another solution.
+    \item No solution. $2x \equiv 5 (mod 16)$ implies $\exists k \in \mathbb{Z}$ such that $2x = 5 + 16k$. The left side of this equation is even for $x \in \mathbb{Z}$, and the right side is odd. Therefore, there is no solution.
+    \item $5x = 10 + 25k$. Therefore, $x = 2+5k$ for $x \in \mathbb{Z}$. The only such values of $x$ on $\mathbb{Z}/25\mathbb{Z}$ are 2, 7, 12, 17, and 22.
+\end{enumerate}
+\end{document}
