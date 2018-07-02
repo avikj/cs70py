@@ -1,5 +1,7 @@
 from modular_arithmetic import mod_inverse, mod_pow, is_probably_prime
 
+# Covered in Week 3 notes on polynomials (http://www.eecs70.org/static/notes/n8.html)
+
 # Implementation of Z/pZ with overloaded number operations
 class FiniteFieldNumber(object):
 	def __init__(self, value, m):

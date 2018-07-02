@@ -2,6 +2,8 @@ import random
 import base64
 from modular_arithmetic import mod_inverse, mod_pow, is_probably_prime
 
+# Covered in Week 2 notes on bijections and RSA (http://www.eecs70.org/static/notes/n7.pdf)
+
 BITS = 256
 def encrypt_message(plaintext, public_key):
 	while len(plaintext)*8 % BITS != 0:

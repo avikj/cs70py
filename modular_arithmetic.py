@@ -1,3 +1,5 @@
+# Covered in Week 2 notes on modular arithmetic (http://www.eecs70.org/static/notes/n6.pdf)
+
 def mod_pow(base, exp, m):
 	if exp == 0:
 		return 1

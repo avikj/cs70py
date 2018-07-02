@@ -1,7 +1,9 @@
 from copy import copy
 from finite_field_number import FiniteFieldNumber
 
-# polynomial is represented as a list of coefficients of the polynomial
+# Covered in Week 3 notes on polynomials (http://www.eecs70.org/static/notes/n8.html)
+
+# A polynomial is represented as a list of coefficients of the polynomial
 # the degree of the polynomial is len(p_coeffs)-1
 # the coefficient at index i corresponds to the x^i term
 # i.e. [c, b, a] represents ax^2+bx+c
