@@ -95,4 +95,5 @@ def test():
 	assert evaluate(p, 2) == 2
 
 
-test()
+if __name__ == '__main__':
+	test()

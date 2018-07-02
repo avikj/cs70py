@@ -1,4 +1,5 @@
-from modular_arithmetic import mod_inverse, mod_pow, is_probably_prime
+from modular_arithmetic import mod_inverse, mod_pow
+from prime_utilities import is_probably_prime
 
 # Covered in Week 3 notes on polynomials (http://www.eecs70.org/static/notes/n8.html)
 
@@ -116,4 +117,5 @@ def test():
 	# test __neg__
 	assert -FiniteFieldNumber(7, 11) == 4
 
-test()
+if __name__ == '__main__':
+	test()

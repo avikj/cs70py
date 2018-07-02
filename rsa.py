@@ -1,6 +1,7 @@
 import random
 import base64
-from modular_arithmetic import mod_inverse, mod_pow, is_probably_prime
+from modular_arithmetic import mod_inverse, mod_pow
+from prime_utilities import is_probably_prime, find_primes
 
 # Covered in Week 2 notes on bijections and RSA (http://www.eecs70.org/static/notes/n7.pdf)
 
@@ -37,12 +38,7 @@ def create_key_pair():
 	d = mod_inverse(e, (p-1)*(q-1))
 	return ((e, N), (d, N))
 
-# a generator which yields primes with b bits
-def find_primes(b=BITS):
-	while True:
-		candidate = 2**(b-1) + random.randrange(2**(b-1))
-		if is_probably_prime(candidate):
-			yield candidate
+
 
 def str_to_int(s):
 	r = 0
@@ -57,11 +53,10 @@ def int_to_str(i):
 		i //= 256
 	return r
 
-def test_funcs():
-	assert mod_inverse(3, 40) == 27
-	assert mod_pow(52, 27, 55) == 13
-	assert not is_probably_prime(121)
-	assert is_probably_prime(191)
+def test():
 	pk, sk = create_key_pair()
 	assert decrypt_message(encrypt_message('hello world', pk), sk) == 'hello world'
 	assert decrypt_message(encrypt_message('hello world', sk), pk) == 'hello world'
+
+if __name__ == '__main__':
+	test()
