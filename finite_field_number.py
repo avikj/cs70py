@@ -6,6 +6,10 @@ from prime_utilities import is_probably_prime
 # Implementation of Z/pZ with overloaded number operations
 class FiniteFieldNumber(object):
 	def __init__(self, value, m):
+		if isinstance(value, FiniteFieldNumber):
+			value = value.value
+		if not isinstance(value, (int, long)):
+			raise ValueError('Finite field values must be integers.')
 		if not is_probably_prime(m):
 			raise ValueError('Modulus must be prime.')
 		self.value = value%m
@@ -44,10 +48,16 @@ class FiniteFieldNumber(object):
 		other = self.typecast(other)
 		return other.__mul__(self.inverse())
 
+	def __truediv__(self, other):
+		return self.__div__(other)
+
+	def __rtruediv__(self, other):
+		return self.__rdiv__(other)
+
 	def __pow__(self, power):
 		if isinstance(power, FiniteFieldNumber):
 			power = power.value
-		if not isinstance(power, int):
+		if not isinstance(power, (int, long)):
 			raise ValueError('Cannot raise to non-integer power.')
 		if power < 0:
 			return self.__pow__(-power).inverse()
@@ -57,22 +67,28 @@ class FiniteFieldNumber(object):
 		return FiniteFieldNumber(-self.value, self.m)
 
 	def __eq__(self, other):
-		if not isinstance(other, FiniteFieldNumber):
-			if isinstance(other, int):
-				other = FiniteFieldNumber(other, self.m)
-			else:
-				raise ValueError('Cannot operate on non-integer values.')
-		return self.value == other.value and self.m == other.m
+		other = self.typecast(other)
+		return self.value == other.value
 
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
+	def __repr__(self):
+		return self.__str__()
 	def __str__(self):
 		return str(self.value)
+	def __int__(self):
+		return self.value
+
+	def __long__(self):
+		return self.value
 
 	def typecast(self, other):
 		if not isinstance(other, FiniteFieldNumber):
-			if isinstance(other, int):
+			if isinstance(other, (int, long)):
 				other = FiniteFieldNumber(other, self.m)
 			else:
-				raise ValueError('Cannot operate on non-integer values.')
+				raise ValueError('Cannot operate on non-integer value: '+str(other))
 		if self.m != other.m:
 			raise ValueError('Cannot operate on numbers from different fields')
 		return other
