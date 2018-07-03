@@ -30,6 +30,12 @@ def find_primes(b=256):
 		if is_probably_prime(candidate):
 			yield candidate
 
+def find_prime_above(n):
+	while True:
+		n += 1
+		if is_probably_prime(n):
+			return n
+
 def test():
 	assert not is_probably_prime(121)
 	assert is_probably_prime(191)
