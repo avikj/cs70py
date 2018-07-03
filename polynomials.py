@@ -1,6 +1,6 @@
 from __future__ import division
 from copy import copy
-from finite_field_number import FiniteFieldNumber
+from finite_fields import FiniteFieldNumber
 
 # Covered in Week 3 notes on polynomials (http://www.eecs70.org/static/notes/n8.html)
 
@@ -96,7 +96,7 @@ def test():
 	assert quotient == q
 	assert isinstance(evaluate(p, 2), FiniteFieldNumber)
 	assert evaluate(p, 2) == 2
-	
+
 
 if __name__ == '__main__':
 	test()

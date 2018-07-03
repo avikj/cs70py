@@ -2,7 +2,7 @@ import random
 import math
 from copy import deepcopy
 from prime_utilities import find_prime_above
-from finite_field_number import FiniteFieldNumber
+from finite_fields import FiniteFieldNumber
 from polynomials import evaluate, interpolate, divide
 from matrix_utilities import rref
 # Covered in Week 3 notes on error-correcting codes (http://www.eecs70.org/static/notes/n9.pdf)
