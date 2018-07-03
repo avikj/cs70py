@@ -1,3 +1,4 @@
+from __future__ import division
 from copy import copy
 from finite_field_number import FiniteFieldNumber
 
@@ -8,7 +9,7 @@ from finite_field_number import FiniteFieldNumber
 # the coefficient at index i corresponds to the x^i term
 # i.e. [c, b, a] represents ax^2+bx+c
 def evaluate(p_coeffs, x):
-	return sum((pow(x, i)*p_coeffs[i] for i in range(len(p_coeffs))))
+	return sum([pow(x, i)*p_coeffs[i] for i in range(len(p_coeffs))])
 
 def multiply(p_coeffs, q_coeffs, do_trim=True):
 	r_coeffs = [0]*((len(p_coeffs)-1)+(len(q_coeffs)-1)+1) # degree is sum of degrees of factors; len(coeffs) = degree + 1
@@ -34,12 +35,10 @@ def increase_degree(p_coeffs, n):
 # returns (quotient, remainder) of division of p by q (long division algorithm)
 def divide(p_coeffs, q_coeffs):
 	p_degree = len(p_coeffs)-1
-	p_coeffs = [float(c) for c in p_coeffs]
+	p_coeffs = copy(p_coeffs)
 	r_coeffs = []
 	for i in range(len(p_coeffs)-len(q_coeffs)+1):
-		print p_coeffs
 		r_coeff = p_coeffs[-1]/q_coeffs[-1]
-		print 'got coefficient ', r_coeff
 		r_coeffs = [r_coeff] + r_coeffs # we get higher degree coefficients first, so we need to prepend to get them sorted with increasing degree
 		p_coeffs = add(p_coeffs, increase_degree(multiply(q_coeffs, [-r_coeff], False), len(p_coeffs)-len(q_coeffs)), False)
 		p_coeffs = p_coeffs[:-1]
@@ -91,9 +90,13 @@ def test():
 	assert isinstance(evaluate(p, FiniteFieldNumber(2, 5)), FiniteFieldNumber)
 	assert evaluate(p, FiniteFieldNumber(2, 5)) == 2
 	p = [FiniteFieldNumber(3, 5), FiniteFieldNumber(2, 5)]
+	q = [FiniteFieldNumber(3, 5), FiniteFieldNumber(4, 5), FiniteFieldNumber(1, 5)]
+	r = multiply(p, q)
+	quotient, remainder = divide(r, p)
+	assert quotient == q
 	assert isinstance(evaluate(p, 2), FiniteFieldNumber)
 	assert evaluate(p, 2) == 2
-
+	
 
 if __name__ == '__main__':
 	test()
