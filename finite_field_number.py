@@ -133,5 +133,16 @@ def test():
 	# test __neg__
 	assert -FiniteFieldNumber(7, 11) == 4
 
+	gf7 = FiniteField(7)
+	assert gf7(5).value == 5
+	assert gf7(6).m == 7
+
+def FiniteField(m):
+	if not is_probably_prime(m):
+		raise ValueError('Modulus must be prime.')
+	def finite_field_number_factory(value):
+		return FiniteFieldNumber(value, m)
+	return finite_field_number_factory
+
 if __name__ == '__main__':
 	test()
