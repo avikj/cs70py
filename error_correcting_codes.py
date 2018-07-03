@@ -1,9 +1,10 @@
 import random
 import math
+from copy import deepcopy
 from prime_utilities import find_prime_above
 from finite_field_number import FiniteFieldNumber
 from polynomials import evaluate, interpolate, divide
-from copy import deepcopy
+from matrix_utilities import rref
 # Covered in Week 3 notes on error-correcting codes (http://www.eecs70.org/static/notes/n9.pdf)
 
 # packets is list of ints, k is max number of erasures to correct for, m is modulus (for polynomials on finite fields)
@@ -45,7 +46,6 @@ def decode_with_general_errors(r, n, m):
 		# finally append the extended column of constants (since coefficient of E must be 1)
 		equations.append(equation)
 
-	# find rref of equations in place
 	reduced_equations = deepcopy(equations)
 	rref(reduced_equations)
 	q_coeffs = [reduced_equations[i][-1] for i in range(n+k)]
@@ -53,30 +53,6 @@ def decode_with_general_errors(r, n, m):
 	p_coeffs, remainder = divide(q_coeffs, e_coeffs)
 	return [evaluate(p_coeffs, i) for i in range(n)]
 
-def rref(matrix):
-	# returns a-b
-	def subtract(a, b):
-		return [a[i]-b[i] for i in range(len(a))]
-	# returns a multiplied by scalar s
-	def multiply(a, s):
-		return [a[i]*s for i in range(len(a))]
-	# returns len(row) if there is no pivot column
-	def get_pivot(row):
-		pivot = 0
-		while pivot < len(row) and row[pivot] == 0:
-			pivot += 1
-		return pivot
-	pivot = 0
-	for i in range(len(matrix)):
-		pivot = get_pivot(matrix[i])
-		if pivot >= len(matrix[i]):
-			continue
-		matrix[i] = multiply(matrix[i], 1/matrix[i][pivot])
-		# we zero out column i in every row other than i
-		for j in range(len(matrix)):
-			if j == i: continue
-			matrix[j] = subtract(matrix[j], multiply(matrix[i], matrix[j][pivot]))
-	matrix.sort(key=get_pivot)
 
 def test():
 	# test correcting erasure errors
