@@ -2,8 +2,8 @@ import random
 import math
 from copy import deepcopy
 from prime_utilities import find_prime_above
-from finite_fields import FiniteFieldNumber
-from polynomials import evaluate, interpolate, divide
+from finite_fields import FiniteFieldNumber, FiniteField
+from polynomials import Polynomial, interpolate
 from matrix_utilities import rref
 # Covered in Week 3 notes on error-correcting codes (http://www.eecs70.org/static/notes/n9.pdf)
 
@@ -12,17 +12,17 @@ def encode_for_erasure_errors(packets, k):
 	m = find_prime_above(max(packets+[len(packets)+k]))
 	packets = [FiniteFieldNumber(p, m) for p in packets]
 	points = [(FiniteFieldNumber(i, m), packet) for i, packet in enumerate(packets)]
-	p_coeffs = interpolate(points)
+	p = interpolate(points, field=FiniteField(m))
 	for x in range(len(packets), len(packets)+k):
-		packets.append(evaluate(p_coeffs, x))
+		packets.append(p.evaluate(x))
 	return packets, m
 
 # packets is list if ints or FiniteFieldNumbers, n is message length
 def decode_with_erasures(packets, n, m):
 	packets = [None if p is None else FiniteFieldNumber(p, m) for p in packets]
 	points = [(FiniteFieldNumber(i, m), packet) for i, packet in enumerate(packets) if packet is not None]
-	p_coeffs = interpolate(points)
-	return [evaluate(p_coeffs, i) for i in range(n)]
+	p = interpolate(points, field=FiniteField(m))
+	return [p.evaluate(i) for i in range(n)]
 
 
 # packets is list of ints, k is max number of erasures to correct for, m is modulus (for polynomials on finite fields)
@@ -48,10 +48,10 @@ def decode_with_general_errors(r, n, m):
 
 	reduced_equations = deepcopy(equations)
 	rref(reduced_equations)
-	q_coeffs = [reduced_equations[i][-1] for i in range(n+k)]
-	e_coeffs = [reduced_equations[j][-1] for j in range(n+k, n+2*k)]+[FiniteFieldNumber(1, m)]
-	p_coeffs, remainder = divide(q_coeffs, e_coeffs)
-	return [evaluate(p_coeffs, i) for i in range(n)]
+	q = Polynomial([reduced_equations[i][-1] for i in range(n+k)], field=FiniteField(m))
+	e = Polynomial([reduced_equations[j][-1] for j in range(n+k, n+2*k)]+[FiniteFieldNumber(1, m)], field=FiniteField(m))
+	p, remainder = q / e
+	return [p.evaluate(i) for i in range(n)]
 
 
 def test():

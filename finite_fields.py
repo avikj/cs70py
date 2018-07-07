@@ -20,14 +20,20 @@ class FiniteFieldNumber(object):
 
 	def __add__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return FiniteFieldNumber(self.value+other.value, self.m)
 
 	def __sub__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return FiniteFieldNumber(self.value-other.value, self.m)
 
 	def __mul__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return FiniteFieldNumber(self.value*other.value, self.m)
 
 	def __radd__(self, other):
@@ -38,14 +44,20 @@ class FiniteFieldNumber(object):
 
 	def __rsub__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return FiniteFieldNumber(other.value-self.value, self.m)
 
 	def __div__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return self.__mul__(other.inverse())
 
 	def __rdiv__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return other.__mul__(self.inverse())
 
 	def __truediv__(self, other):
@@ -68,6 +80,8 @@ class FiniteFieldNumber(object):
 
 	def __eq__(self, other):
 		other = self.typecast(other)
+		if other is None:
+			return NotImplemented
 		return self.value == other.value
 
 	def __ne__(self, other):
@@ -83,12 +97,13 @@ class FiniteFieldNumber(object):
 	def __long__(self):
 		return self.value
 
+	# return value of None means caller should return NotImplemented
 	def typecast(self, other):
 		if not isinstance(other, FiniteFieldNumber):
 			if isinstance(other, (int, long)):
 				other = FiniteFieldNumber(other, self.m)
 			else:
-				raise ValueError('Cannot operate on non-integer value: '+str(other))
+				return None
 		if self.m != other.m:
 			raise ValueError('Cannot operate on numbers from different fields')
 		return other
@@ -140,9 +155,10 @@ def test():
 def FiniteField(m):
 	if not is_probably_prime(m):
 		raise ValueError('Modulus must be prime.')
-	def finite_field_number_factory(value):
-		return FiniteFieldNumber(value, m)
-	return finite_field_number_factory
+	class MFiniteFieldNumber(FiniteFieldNumber):
+		def __init__(self, value):
+			super(MFiniteFieldNumber, self).__init__(value, m)
+	return MFiniteFieldNumber
 
 if __name__ == '__main__':
 	test()
