@@ -27,40 +27,6 @@ def interpolate(points, field=None):
 		result += deltas[i] * Polynomial(ys[i], field=field)
 	return result
 
-def equal(p_coeffs, q_coeffs, tolerance=0):
-	p_coeffs, q_coeffs = trim(p_coeffs), trim(q_coeffs)
-	if len(p_coeffs) != len(q_coeffs):
-		return False
-	for i in range(len(p_coeffs)):
-		if abs(p_coeffs[i]-q_coeffs[i]) > tolerance:
-			return False
-	return True
-
-def test():
-	p = Polynomial([1, 2, 3])
-	assert p == Polynomial([1, 2, 3])
-	assert p == Polynomial([1, 2, 3, 0])
-	assert p != Polynomial([0, 1, 2, 3])
-	assert p.evaluate(5) == 1 + 2*5**1 + 3*5**2 # p(x) = 3x^2+2x+1
-	assert Polynomial([1, 0, 0]).evaluate(100) == 1 # p(x) = 1
-	assert Polynomial([1, 1])+Polynomial([1, 1]) == Polynomial([2, 2]) # (1+x)+(1+x) = (2+2x)
-	assert Polynomial([1, 1]) + Polynomial([1, -1, 4]) == Polynomial([2, 0, 4]) # (1+x)+(1-x+4x^2) = (2+4x^2)
-	assert Polynomial([1, 1])*Polynomial([1, 1]) == Polynomial([1, 2, 1]) # (1+x)*(1+x) = (1+2x+x^2)
-	assert Polynomial([2])*Polynomial([3, 2, 10, 1]) == Polynomial([6, 4, 20, 2]) # 2*(3+2x+10x^2+x^3) = 6+4x+20x^2+2x^3
-	assert interpolate([(1, p.evaluate(1)), (10, p.evaluate(10)), (7, p.evaluate(7))]).__eq__(Polynomial([1, 2, 3]), 1e-5)
-	quotient, remainder = Polynomial([-1, 0, 1, 1]) / Polynomial([-1, 1])
-	assert quotient.__eq__(Polynomial([2, 2, 1]), 1e-5) and remainder.__eq__(Polynomial([1]), 1e-5)
-
-	# Test on FiniteFieldNumbers
-	p = Polynomial([3, 2], FiniteField(5)) # 2x + 3
-	assert isinstance(p.evaluate(2), FiniteFieldNumber)
-	assert p.evaluate(2) == 2
-	p = Polynomial([3, 2], FiniteField(5))
-	q = Polynomial([3, 2], FiniteField(5))
-	r = p*q
-	quotient, remainder = r/p
-	assert quotient == q
-
 class Polynomial(object):
 	def __init__(self, arg, field=None):
 		self.field = float
@@ -127,6 +93,8 @@ class Polynomial(object):
 		return r, p
 	def __truediv__(self, other):
 		return self.__div__(other)
+	def __floordiv__(self, other):
+		return (self / other)[0]
 	def typecast(self, other):
 		if not isinstance(other, Polynomial):
 			other = Polynomial(other, self.field)
@@ -156,5 +124,31 @@ class Polynomial(object):
 	@staticmethod
 	def power(n, field=float):
 		return Polynomial([0]*n+[1], field=field)
+
+def test():
+	p = Polynomial([1, 2, 3])
+	assert p == Polynomial([1, 2, 3])
+	assert p == Polynomial([1, 2, 3, 0])
+	assert p != Polynomial([0, 1, 2, 3])
+	assert p.evaluate(5) == 1 + 2*5**1 + 3*5**2 # p(x) = 3x^2+2x+1
+	assert Polynomial([1, 0, 0]).evaluate(100) == 1 # p(x) = 1
+	assert Polynomial([1, 1])+Polynomial([1, 1]) == Polynomial([2, 2]) # (1+x)+(1+x) = (2+2x)
+	assert Polynomial([1, 1]) + Polynomial([1, -1, 4]) == Polynomial([2, 0, 4]) # (1+x)+(1-x+4x^2) = (2+4x^2)
+	assert Polynomial([1, 1])*Polynomial([1, 1]) == Polynomial([1, 2, 1]) # (1+x)*(1+x) = (1+2x+x^2)
+	assert Polynomial([2])*Polynomial([3, 2, 10, 1]) == Polynomial([6, 4, 20, 2]) # 2*(3+2x+10x^2+x^3) = 6+4x+20x^2+2x^3
+	assert interpolate([(1, p.evaluate(1)), (10, p.evaluate(10)), (7, p.evaluate(7))]).__eq__(Polynomial([1, 2, 3]), 1e-5)
+	quotient, remainder = Polynomial([-1, 0, 1, 1]) / Polynomial([-1, 1])
+	assert quotient.__eq__(Polynomial([2, 2, 1]), 1e-5) and remainder.__eq__(Polynomial([1]), 1e-5)
+
+	# Test on FiniteFieldNumbers
+	p = Polynomial([3, 2], FiniteField(5)) # 2x + 3
+	assert isinstance(p.evaluate(2), FiniteFieldNumber)
+	assert p.evaluate(2) == 2
+	p = Polynomial([3, 2], FiniteField(5))
+	q = Polynomial([3, 2], FiniteField(5))
+	r = p*q
+	quotient, remainder = r/p
+	assert quotient == q
+
 if __name__ == '__main__':
 	test()
